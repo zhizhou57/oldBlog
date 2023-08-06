@@ -107,7 +107,19 @@
 <p>输出结果如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;/Users/yes_liu/Study/pythonbase/main.py&quot;, line 47, in &lt;module&gt;</span><br><span class="line">    print(next(arr_iter))</span><br><span class="line">          ^^^^^^^^^^^^^^</span><br><span class="line">  File &quot;/Users/yes_liu/Study/pythonbase/main.py&quot;, line 29, in __next__</span><br><span class="line">    raise StopIteration</span><br><span class="line">StopIteration</span><br><span class="line">arr 是可迭代对象：True</span><br><span class="line">arr 是迭代器：False</span><br><span class="line">arr_iter 是可迭代对象：True</span><br><span class="line">arr_iter 是迭代器：True</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
 
-<h1 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h1><p>TODO<br>参考：<a target="_blank" rel="noopener" href="https://www.jb51.net/article/247323.htm">https://www.jb51.net/article/247323.htm</a></p>
+<h1 id="Generator与yield"><a href="#Generator与yield" class="headerlink" title="Generator与yield"></a>Generator与yield</h1><p>Generator对象是Iterator的，也就是说，generator可以用next()方法逐个取出其中的元素。<br>但是Iterator却不一定是Genertor，主要区别在于，Generator返回的值是动态生成的。</p>
+<p>定义迭代器有两种方式，第一个是使用yield关键词，另外一个是生成器表达式”()”，我们用yield关键词定义一个生成器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">gen</span>():</span><br><span class="line">    j = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> j &lt; <span class="number">7</span>:</span><br><span class="line">        j += <span class="number">1</span></span><br><span class="line">        <span class="keyword">yield</span> j</span><br></pre></td></tr></table></figure>
+<p>此时采用的yield的语句的gen函数是一个生成器，此时，每次调用next()的时候执行该函数，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; g = gen()</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">1</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">2</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">3</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">4</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">5</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">6</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">7</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">StopIteration</span><br></pre></td></tr></table></figure>
+
+<p>其特点是，generator是懒加载的，每次迭代不会像list保存之前的返回值，而是一整个执行流，可以节省内存。</p>
+<p>此外，generator还具有send方法，可以对yield所在的generator传递值，一个经典的应用是生产者和消费者的异步执行，如下所示</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">consumer</span>():</span><br><span class="line">    r = <span class="string">&#x27;here&#x27;</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        n1 = <span class="keyword">yield</span> r   <span class="comment">#这里的等式右边相当于一个整体，接受回传值</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> n1:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;[CONSUMER] Consuming %s...&#x27;</span> % n1)</span><br><span class="line">        r = <span class="string">&#x27;%d00 OK&#x27;</span> % n1</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">produce</span>(<span class="params">c</span>):</span><br><span class="line">    aa = c.send(<span class="literal">None</span>)</span><br><span class="line">    n = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> n &lt; <span class="number">5</span>:</span><br><span class="line">        n = n + <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;[PRODUCER] Producing %s...&#x27;</span> % n)</span><br><span class="line">        r1 = c.send(n)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;[PRODUCER] Consumer return: %s&#x27;</span> % r1)</span><br><span class="line">    c.close()</span><br><span class="line"></span><br><span class="line">c = consumer()</span><br><span class="line">produce(c)</span><br></pre></td></tr></table></figure>
+<p>其运行结果为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[PRODUCER] Producing 1...</span><br><span class="line">[CONSUMER] Consuming 1...</span><br><span class="line">[PRODUCER] Consumer return: 100 OK</span><br><span class="line">[PRODUCER] Producing 2...</span><br><span class="line">[CONSUMER] Consuming 2...</span><br><span class="line">[PRODUCER] Consumer return: 200 OK</span><br><span class="line">[PRODUCER] Producing 3...</span><br><span class="line">[CONSUMER] Consuming 3...</span><br><span class="line">[PRODUCER] Consumer return: 300 OK</span><br><span class="line">[PRODUCER] Producing 4...</span><br><span class="line">[CONSUMER] Consuming 4...</span><br><span class="line">[PRODUCER] Consumer return: 400 OK</span><br><span class="line">[PRODUCER] Producing 5...</span><br><span class="line">[CONSUMER] Consuming 5...</span><br><span class="line">[PRODUCER] Consumer return: 500 OK</span><br></pre></td></tr></table></figure>
+
+<p>参考：<br><a target="_blank" rel="noopener" href="https://www.jb51.net/article/247323.htm">https://www.jb51.net/article/247323.htm</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39521554/article/details/79864889">https://blog.csdn.net/qq_39521554/article/details/79864889</a></p>
 
       
     </div>
@@ -138,7 +150,7 @@
         
   
     <h1 itemprop="name">
-      <a class="p-name article-title" href="/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/">读大语言模型综述-RUC_AI_Box</a>
+      <a class="p-name article-title" href="/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/">读大语言模型综述-RUC AI Box</a>
     </h1>
   
 
@@ -146,11 +158,74 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        
+        <p>人大这篇综述足足有60页，从Introduction来看这篇文章非常不错，涵盖的内容非常全面，因此决定写一篇博客记录我的阅读过程，以及对原文及参考文献的深入思考。初步预计读完这篇综述要十五天左右，希望可以在8月20日之前完成这篇文章的阅读。但是想要真正了解、掌握大模型，要学的还很多很多。</p>
+<p>原文地址：<a target="_blank" rel="noopener" href="https://github.com/RUCAIBox/LLMSurvey">https://github.com/RUCAIBox/LLMSurvey</a><br>包含英文版和中文版，文章原文是直接写成英文的，中文是翻译版。有条件的话推荐阅读英文版，我这种英文菜🐶暂时从中文版读起。也希望自己这篇博客，能给后续学习LLM的同学一个指引。</p>
+<h1 id="1-引言"><a href="#1-引言" class="headerlink" title="1.引言"></a>1.引言</h1><p>大模型的发展历程主要可以分为四个阶段，分别是统计语言模型-&gt;神经语言模型-&gt;预训练语言模型-&gt;大语言模型</p>
+<h2 id="统计语言模型（SLM）"><a href="#统计语言模型（SLM）" class="headerlink" title="统计语言模型（SLM）"></a>统计语言模型（SLM）</h2><p>其基本思想是基于马尔可夫假设建立词预测模型，以n-gram作为建模的方式，但是由于需要估计指数级别的转化概率，容易遭受维度灾难。</p>
+<h2 id="神经语言模型（NLM）"><a href="#神经语言模型（NLM）" class="headerlink" title="神经语言模型（NLM）"></a>神经语言模型（NLM）</h2><p>以RNN、CNN等传统神经网络架构为代表的语言模型，以word2vec等方式学习单词的语义，开创了将语言模型用于表示学习（超越词序列建模）的应用。</p>
+<h2 id="预训练语言模型（PLM）"><a href="#预训练语言模型（PLM）" class="headerlink" title="预训练语言模型（PLM）"></a>预训练语言模型（PLM）</h2><p>以ELMo（通过预训练来捕捉词的上下文语义）、Transformer（基于self-attention的高度并行化架构）、BERT、GPT等模型为代表，在大规模无标签语料库上使用专门设计的预训练任务进行训练，这些预训练的上下文感知词表示作为通用语义特征非常有效。还确立了“Pretrain-&gt;finetune”的学习范式。<br>在这一范式的基础上，引入了不同的模型架构（GPT-2、BART等）以及不同的预训练策略（Roberta等），在该范式中，通常需要对PLM进行微调以适配不同的下游任务。</p>
+<h2 id="大语言模型（LLM）"><a href="#大语言模型（LLM）" class="headerlink" title="大语言模型（LLM）"></a>大语言模型（LLM）</h2><p>许多研究通过训练越来越大的PLM来探索性能的极限，但这些大规模的 PLM与较小的PLM(例如GPT-2和GPT-3)表现出完全不同的行为，并在解决一系列复杂任务中展示了惊人的能力(称为涌现能力)，GPT-3 可以通过上下文学习(in-context learning, ICL)来解决小样本任务，而 GPT-2 则表现不佳。ChatGPT则将GPT系列的LLM应用于对话，展现出惊人的与人类对话的能力。<br>本文提出，LLM和PLM之间有三个主要区别：</p>
+<ol>
+<li>首先，LLM表现出一些令人惊讶的涌现能力，这些能力可能在以前较小的PLM中没有观察到，它使得人工智能算法具有前所未有的强大和有效性。</li>
+<li>其次，LLM 将彻底改变人类开发和使用人工智能算法的方式。与小型PLM不同，访问LLM的主要方法是通过提示接口(例如 GPT-4 API)。人们必须了解LLM的工作原理，并以LLM能够遵循的方式形式化他们的任务。 </li>
+<li>第三，LLM 的发展不再明确区分研究和工程。训练LLM需要在大规模数据处理和分布式并行训练方面具有丰富的实践经验。研究人员需要强大的工程能力。</li>
+</ol>
+<h2 id="文章结构"><a href="#文章结构" class="headerlink" title="文章结构"></a>文章结构</h2><p>本综述从四个主要方面对LLM的最近进展进行文献综述，包括预训练(如何预训练出一个有能力的LLM)、适配微调(如何从有效性和安全性两个角度有效地微调预训练的LLM)、使用(如何利用LLM解决各种下游任务)以及能力评估(如何评估LLM的能力和现有的经验性发现)。</p>
+<h1 id="2-概述"><a href="#2-概述" class="headerlink" title="2.概述"></a>2.概述</h1><h2 id="2-1-大语言模型的背景"><a href="#2-1-大语言模型的背景" class="headerlink" title="2.1 大语言模型的背景"></a>2.1 大语言模型的背景</h2><p>目前，LLM是指包含数千亿(或更多)参数的、在大规模文本数据上进行训练的Transformer语言模型，例如GPT-3，PaLM，LLaMA。本部分将介绍LLM的基本背景，包括扩展法则、涌现能力和关键技术。</p>
+<h3 id="2-1-1-大预言模型的扩展法则"><a href="#2-1-1-大预言模型的扩展法则" class="headerlink" title="2.1.1 大预言模型的扩展法则"></a>2.1.1 大预言模型的扩展法则</h3><p>采用定量的方法，研究模型规模、数据规模和总计算量之间的关系。</p>
+<ul>
+<li>KM扩展法则</li>
+</ul>
+<p><img src="/yes_liu.github.io/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC%20AI%20Box/KMFormula.png"></p>
+<p>其中，N:模型规模, D:数据集规模, C:训练计算量, L(·)表示用nats(指使用自然对数的，\sigma -p ln(p))表示的交叉熵损失。在不同数据大小、模型大小和训练计算量之下进行拟合。</p>
+<ul>
+<li>Chinchilla扩展法则</li>
+</ul>
+<p><img src="/yes_liu.github.io/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC%20AI%20Box/Chinchilla.png"><br>其中E&#x3D;1.69,A&#x3D;406.4,B&#x3D;410.7，α&#x3D;0.34和β&#x3D;0.28。</p>
+<p>KM 扩展法则更偏向于将更大的预算分配给模型大 小，而 Chinchilla 扩展法则则认为模型大小和数据大小应该以相同的比例增加。这些扩展法则提供了对扩展效应的直观理解，使得在训练过程中能够预测LLM的性能。</p>
+<p>然而，一些能力（如ICL）无法根据扩展法则进行预测，只有当模型超过一定规模才能被观察到。</p>
+<h3 id="大模型的涌现能力"><a href="#大模型的涌现能力" class="headerlink" title="大模型的涌现能力"></a>大模型的涌现能力</h3><p>LLM 的涌现能力定义为 “在小型模型中不存在但在大型模型中产生的能力”，与物理学中的相变类似。</p>
+<ul>
+<li>上下文学习（ICL, In Context Learning）<br>由GPT3引入，假设已经为语言模型提供了一个自然语言指令和&#x2F;或几个任务演 示，它可以通过完成输入文本的单词序列的方式来为测试实 例生成预期的输出，而无需额外的训练或梯度更新。</li>
+<li>指令遵循<br>通过使用自然语言描述的混合多任务数据集进行微调(称为指令微调)，LLM 在未见过的以指令形式描述的任务上表现出色。</li>
+<li>逐步推理<br>通过使用思维链(Chain-of-Thought, CoT)提示策略，LLM可以通过利用包含中间推理步骤的提示机制来解决复杂问题。</li>
+</ul>
+<h2 id="2-2-技术演进"><a href="#2-2-技术演进" class="headerlink" title="2.2 技术演进"></a>2.2 技术演进</h2><p>最近几年现有的LLM(大小超过 100 亿)的时间轴如下，因篇幅和精力原因不再赘述<br><img src="/yes_liu.github.io/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC%20AI%20Box/timestone.png"></p>
+<h1 id="3-大预言模型资源"><a href="#3-大预言模型资源" class="headerlink" title="3.大预言模型资源"></a>3.大预言模型资源</h1><p>开发或复现LLM绝非易事，本文整理了公开的checkpoint、语料库和代码库：</p>
+<h2 id="3-1-Checkpoint或API"><a href="#3-1-Checkpoint或API" class="headerlink" title="3.1 Checkpoint或API"></a>3.1 Checkpoint或API</h2><p>详见原文及OpenAI的开放APi: <a target="_blank" rel="noopener" href="https://platform.openai.com/docs/models/overview">https://platform.openai.com/docs/models/overview</a></p>
+<h2 id="3-2-常用语料库"><a href="#3-2-常用语料库" class="headerlink" title="3.2 常用语料库"></a>3.2 常用语料库</h2><p>包括Books、 CommonCrawl、Reddit Links、Wikipedia、Code、Others</p>
+<ul>
+<li>Books: BookCorpus, Gutenberg</li>
+<li>CommonCrawl: 过滤数据(C4, CC-Stories, CC-News, RealNews)</li>
+<li>Reddit Links: WebText, OpenWebText, PushShitt.io</li>
+<li>Wikipedia</li>
+<li>Code: BigQuery(由谷歌发布)</li>
+<li>Others: The Pile<br>现有的LLM的预训练通常需要混合使用不同的数据源，并进行进一步的提取、处理。</li>
+</ul>
+<h2 id="3-3代码库资源"><a href="#3-3代码库资源" class="headerlink" title="3.3代码库资源"></a>3.3代码库资源</h2><ul>
+<li>Transformers: 大名鼎鼎的Huggingface开发维护，方便使用各种预训练模型</li>
+<li>DeepSpeed: Microsoft开发的分布式训练优化库</li>
+<li>Megatron-LM: NVIDIA开发的分布式训练优化库</li>
+<li>JAX: Google开发的高性能机器学习算法库（兼容谷歌的TPU）</li>
+<li>Colossal-AI: 用于训练LLM的深度学习库，基于PyTorch实现</li>
+<li>BMTrain: OpenBMB 开发的用于以分布式 方式训练大规模参数模型的高效库</li>
+<li>FastMoE: 基于PyTorch的MoE模型训练库</li>
+</ul>
+<h1 id="4-预训练"><a href="#4-预训练" class="headerlink" title="4.预训练"></a>4.预训练</h1><h2 id="4-1-数据收集"><a href="#4-1-数据收集" class="headerlink" title="4.1 数据收集"></a>4.1 数据收集</h2><p>LLM需要高质量的数据来训练模型，直接影响到模型的能力，因此如何收集并处理预训练数据（俗称洗数据）是比较重要的。</p>
+<h3 id="数据来源"><a href="#数据来源" class="headerlink" title="数据来源"></a>数据来源</h3><ul>
+<li>通用文本数据：包含网页（质量参差不起）、对话文本（陈述性指令和直接 疑问句被错误地认为是对话的开始，从而导致指令的有效性下降）、书籍（更正式）</li>
+<li>专用文本数据：多语言文本、科学文本、代码</li>
+</ul>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><ul>
+<li>基于质量过滤：删除低质量的数据可以采用基于分类器的方法和基于启发的方法</li>
+<li>去重：重复数据会降低多样性，可能导致训练过程不稳定</li>
+<li>分词：直接利用已有的分词器是方便的，但是使用专门为预训练语料设计的分词器会更加有效。采用SentencePiece和Byte Pair Encoding算法进行分词。</li>
+</ul>
+<h3 id="预训练数据对大模型的影响"><a href="#预训练数据对大模型的影响" class="headerlink" title="预训练数据对大模型的影响"></a>预训练数据对大模型的影响</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/" data-id="clky1ftsa0002crftglfo3dt2" data-title="读大语言模型综述-RUC_AI_Box" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/" data-id="clky1ftsa0002crftglfo3dt2" data-title="读大语言模型综述-RUC AI Box" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -331,7 +406,7 @@
           </li>
         
           <li>
-            <a href="/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/">读大语言模型综述-RUC_AI_Box</a>
+            <a href="/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/">读大语言模型综述-RUC AI Box</a>
           </li>
         
           <li>
