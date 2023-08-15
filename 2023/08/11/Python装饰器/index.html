@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Python装饰器 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="基础知识-关于函数在python中，函数可以作为变量传递给另一个函数，还可以在函数之内嵌套，如： 1234567891011121314# 首先定义一个普通的函数def print_text(name):    return &amp;#x27;hello,&amp;#x27;+ name# 再定义一个嵌套函数，分别以函数和普通的字符串作为参数def add_tag(func):    def prt_func(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python装饰器">
+<meta property="og:url" content="https://zhizhou57.github.io/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="基础知识-关于函数在python中，函数可以作为变量传递给另一个函数，还可以在函数之内嵌套，如： 1234567891011121314# 首先定义一个普通的函数def print_text(name):    return &amp;#x27;hello,&amp;#x27;+ name# 再定义一个嵌套函数，分别以函数和普通的字符串作为参数def add_tag(func):    def prt_func(">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-11T07:26:01.000Z">
+<meta property="article:modified_time" content="2023-08-11T08:05:25.175Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/yes_liu.github.io/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/yes_liu.github.io/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/yes_liu.github.io/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/yes_liu.github.io/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/yes_liu.github.io/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/">Home</a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/yes_liu.github.io/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhizhou57.github.io/yes_liu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Python装饰器" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/" class="article-date">
+  <time class="dt-published" datetime="2023-08-11T07:26:01.000Z" itemprop="datePublished">2023-08-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Python装饰器
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="基础知识-关于函数"><a href="#基础知识-关于函数" class="headerlink" title="基础知识-关于函数"></a>基础知识-关于函数</h1><p>在python中，函数可以作为变量传递给另一个函数，还可以在函数之内嵌套，如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先定义一个普通的函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_text</span>(<span class="params">name</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello,&#x27;</span>+ name</span><br><span class="line"><span class="comment"># 再定义一个嵌套函数，分别以函数和普通的字符串作为参数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_tag</span>(<span class="params">func</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">prt_func</span>(<span class="params">name</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;p&gt;&#123;0&#125;&lt;/p&gt;&#x27;</span>.<span class="built_in">format</span>(func(name))    </span><br><span class="line">    <span class="keyword">return</span> prt_func</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 将函数作为参数传递给 add_tag</span></span><br><span class="line">hlo = add_tag(print_text)</span><br><span class="line"><span class="comment"># 将 &#x27;crossin&#x27; 作为参数传递给 hlo</span></span><br><span class="line"><span class="built_in">print</span>(hlo(<span class="string">&#x27;crossin&#x27;</span>))</span><br><span class="line"><span class="comment"># 结果 : &lt;p&gt;hello,crossin&lt;/p&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里在函数add_tag内嵌套定义了一个函数prt_func，并且在pre_func函数内调用了作为参数的函数func.</p>
+<h1 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h1><p>这种在不改变原print_text函数内容的情况下，动态增加功能的方式，就是装饰器的作用。</p>
+<h2 id="不带参数的装饰器"><a href="#不带参数的装饰器" class="headerlink" title="不带参数的装饰器"></a>不带参数的装饰器</h2><p>将以上代码稍作修改，就可以得到一个装饰器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义一个嵌套函数，分别以函数和普通的字符串作为参数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_tag</span>(<span class="params">func</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">prt_func</span>(<span class="params">name</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;p&gt;&#123;0&#125;&lt;/p&gt;&#x27;</span>.<span class="built_in">format</span>(func(name))    </span><br><span class="line">    <span class="keyword">return</span> prt_func</span><br><span class="line"><span class="comment"># 定义一个普通的函数,并调用装饰器</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@add_tag</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_text</span>(<span class="params">name</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello,&#x27;</span>+ name</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(print_text(<span class="string">&#x27;crossin&#x27;</span>))</span><br><span class="line"><span class="comment"># 结果 : &lt;p&gt;hello,crossin&lt;/p&gt;</span></span><br></pre></td></tr></table></figure>
+<p>用@add_tag装饰器去修饰print_text函数，便可以在执行print_text函数时，将其作为参数传递给add_tag函数执行。</p>
+<h2 id="带参数的装饰器"><a href="#带参数的装饰器" class="headerlink" title="带参数的装饰器"></a>带参数的装饰器</h2><p>如果想添加不同的tag，那么要让add_tag函数也能接收参数，以在不重新写其他装饰器的前提下，随心所欲的使用 <div>、<img>等标签包裹文本,需要做以下修改：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义装饰器函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_tag</span>(<span class="params">tagname</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decorator</span>(<span class="params">func</span>):</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">prt_func</span>(<span class="params">name</span>):</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;&lt;&#123;0&#125;&gt;&#123;1&#125;&lt;/&#123;0&#125;&gt;&#x27;</span>.<span class="built_in">format</span>(tagname,func(name)) </span><br><span class="line">        <span class="keyword">return</span> prt_func    </span><br><span class="line">    <span class="keyword">return</span> decorator</span><br><span class="line">       </span><br><span class="line"><span class="meta">@add_tag(<span class="params"><span class="string">&#x27;div&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_text</span>(<span class="params">name</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello,&#x27;</span>+name</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(print_text(<span class="string">&#x27;crossin&#x27;</span>))</span><br><span class="line"><span class="comment"># 结果 : &lt;div&gt;arg is abc&lt;/div&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这种三层嵌套其实等价于: add_tag(‘div’)(print_text(‘crossin’)), add_tag(‘div’)函数执行完返回一个装饰器decorator，然后执行decorator(print_text(‘crossin’)), 同二层嵌套的装饰器了。</p>
+<p>用装饰器装饰一个类时同理，在创建该类的变量时会执行装饰器的内容，如class_name &#x3D; decorator(class_name)</p>
+<h1 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h1><p>设计一个decorator，它可作用于任何函数上，并打印该函数的执行时间：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time, functools</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">metric</span>(<span class="params">fn</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decorator</span>(<span class="params">*args, **kw</span>):</span><br><span class="line">        start = time.time()</span><br><span class="line">        result = fn(*args, **kw)</span><br><span class="line">        end = time.time()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;%s executed in %s ms&#x27;</span> % (fn.__name__, end - start))</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    <span class="keyword">return</span> decorator</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="meta">@metric</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fast</span>(<span class="params">x, y</span>):</span><br><span class="line">    time.sleep(<span class="number">0.0012</span>)</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line"></span><br><span class="line"><span class="meta">@metric</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">slow</span>(<span class="params">x, y, z</span>):</span><br><span class="line">    time.sleep(<span class="number">0.1234</span>)</span><br><span class="line">    <span class="keyword">return</span> x * y * z;</span><br><span class="line"></span><br><span class="line">f = fast(<span class="number">11</span>, <span class="number">22</span>)</span><br><span class="line">s = slow(<span class="number">11</span>, <span class="number">22</span>, <span class="number">33</span>)</span><br><span class="line"><span class="keyword">if</span> f != <span class="number">33</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;测试失败!&#x27;</span>)</span><br><span class="line"><span class="keyword">elif</span> s != <span class="number">7986</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;测试失败!&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行结果</span></span><br><span class="line"><span class="comment"># fast executed in 0.0015223026275634766 ms</span></span><br><span class="line"><span class="comment"># slow executed in 0.1284499168395996 ms</span></span><br></pre></td></tr></table></figure>
+
+
+<p>参考：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5MDEyMDk4Mw==&mid=2650166480&idx=2&sn=be7349921b91730a8c717f6ab28dad97&chksm=be4b59a8893cd0bee407e3d8a1b7bec44d7571623c355a37f352d5cf9e104d986af6f5b5e1fe&scene=21#wechat_redirect">https://mp.weixin.qq.com/s?__biz=MjM5MDEyMDk4Mw==&amp;mid=2650166480&amp;idx=2&amp;sn=be7349921b91730a8c717f6ab28dad97&amp;chksm=be4b59a8893cd0bee407e3d8a1b7bec44d7571623c355a37f352d5cf9e104d986af6f5b5e1fe&amp;scene=21#wechat_redirect</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/" data-id="cllbx2ca00001x7ft38svf50p" data-title="Python装饰器" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          设计模式系列-工厂模式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/yes_liu.github.io/2023/08/11/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%20%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">设计模式系列 单例模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/08/">August 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">设计模式系列-工厂模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/">Python装饰器</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/11/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%20%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">设计模式系列 单例模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/11/%E7%BD%AE%E8%BA%AB%E4%BA%8B%E5%86%85/">置身事内</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/08/bpe/">bpe</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/yes_liu.github.io/" class="mobile-nav-link">Home</a>
+  
+    <a href="/yes_liu.github.io/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/yes_liu.github.io/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/yes_liu.github.io/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/yes_liu.github.io/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -73,6 +73,196 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-设计模式系列-工厂模式" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time class="dt-published" datetime="2023-08-15T06:22:10.000Z" itemprop="datePublished">2023-08-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">设计模式系列-工厂模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" data-id="cllbx2ca10003x7ft8w4x0ajv" data-title="设计模式系列-工厂模式" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-Python装饰器" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/" class="article-date">
+  <time class="dt-published" datetime="2023-08-11T07:26:01.000Z" itemprop="datePublished">2023-08-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/">Python装饰器</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="基础知识-关于函数"><a href="#基础知识-关于函数" class="headerlink" title="基础知识-关于函数"></a>基础知识-关于函数</h1><p>在python中，函数可以作为变量传递给另一个函数，还可以在函数之内嵌套，如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先定义一个普通的函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_text</span>(<span class="params">name</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello,&#x27;</span>+ name</span><br><span class="line"><span class="comment"># 再定义一个嵌套函数，分别以函数和普通的字符串作为参数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_tag</span>(<span class="params">func</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">prt_func</span>(<span class="params">name</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;p&gt;&#123;0&#125;&lt;/p&gt;&#x27;</span>.<span class="built_in">format</span>(func(name))    </span><br><span class="line">    <span class="keyword">return</span> prt_func</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 将函数作为参数传递给 add_tag</span></span><br><span class="line">hlo = add_tag(print_text)</span><br><span class="line"><span class="comment"># 将 &#x27;crossin&#x27; 作为参数传递给 hlo</span></span><br><span class="line"><span class="built_in">print</span>(hlo(<span class="string">&#x27;crossin&#x27;</span>))</span><br><span class="line"><span class="comment"># 结果 : &lt;p&gt;hello,crossin&lt;/p&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里在函数add_tag内嵌套定义了一个函数prt_func，并且在pre_func函数内调用了作为参数的函数func.</p>
+<h1 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h1><p>这种在不改变原print_text函数内容的情况下，动态增加功能的方式，就是装饰器的作用。</p>
+<h2 id="不带参数的装饰器"><a href="#不带参数的装饰器" class="headerlink" title="不带参数的装饰器"></a>不带参数的装饰器</h2><p>将以上代码稍作修改，就可以得到一个装饰器</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义一个嵌套函数，分别以函数和普通的字符串作为参数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_tag</span>(<span class="params">func</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">prt_func</span>(<span class="params">name</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;p&gt;&#123;0&#125;&lt;/p&gt;&#x27;</span>.<span class="built_in">format</span>(func(name))    </span><br><span class="line">    <span class="keyword">return</span> prt_func</span><br><span class="line"><span class="comment"># 定义一个普通的函数,并调用装饰器</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@add_tag</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_text</span>(<span class="params">name</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello,&#x27;</span>+ name</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(print_text(<span class="string">&#x27;crossin&#x27;</span>))</span><br><span class="line"><span class="comment"># 结果 : &lt;p&gt;hello,crossin&lt;/p&gt;</span></span><br></pre></td></tr></table></figure>
+<p>用@add_tag装饰器去修饰print_text函数，便可以在执行print_text函数时，将其作为参数传递给add_tag函数执行。</p>
+<h2 id="带参数的装饰器"><a href="#带参数的装饰器" class="headerlink" title="带参数的装饰器"></a>带参数的装饰器</h2><p>如果想添加不同的tag，那么要让add_tag函数也能接收参数，以在不重新写其他装饰器的前提下，随心所欲的使用 <div>、<img>等标签包裹文本,需要做以下修改：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义装饰器函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add_tag</span>(<span class="params">tagname</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decorator</span>(<span class="params">func</span>):</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">prt_func</span>(<span class="params">name</span>):</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;&lt;&#123;0&#125;&gt;&#123;1&#125;&lt;/&#123;0&#125;&gt;&#x27;</span>.<span class="built_in">format</span>(tagname,func(name)) </span><br><span class="line">        <span class="keyword">return</span> prt_func    </span><br><span class="line">    <span class="keyword">return</span> decorator</span><br><span class="line">       </span><br><span class="line"><span class="meta">@add_tag(<span class="params"><span class="string">&#x27;div&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_text</span>(<span class="params">name</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello,&#x27;</span>+name</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(print_text(<span class="string">&#x27;crossin&#x27;</span>))</span><br><span class="line"><span class="comment"># 结果 : &lt;div&gt;arg is abc&lt;/div&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这种三层嵌套其实等价于: add_tag(‘div’)(print_text(‘crossin’)), add_tag(‘div’)函数执行完返回一个装饰器decorator，然后执行decorator(print_text(‘crossin’)), 同二层嵌套的装饰器了。</p>
+<p>用装饰器装饰一个类时同理，在创建该类的变量时会执行装饰器的内容，如class_name &#x3D; decorator(class_name)</p>
+<h1 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h1><p>设计一个decorator，它可作用于任何函数上，并打印该函数的执行时间：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time, functools</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">metric</span>(<span class="params">fn</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decorator</span>(<span class="params">*args, **kw</span>):</span><br><span class="line">        start = time.time()</span><br><span class="line">        result = fn(*args, **kw)</span><br><span class="line">        end = time.time()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;%s executed in %s ms&#x27;</span> % (fn.__name__, end - start))</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    <span class="keyword">return</span> decorator</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="meta">@metric</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fast</span>(<span class="params">x, y</span>):</span><br><span class="line">    time.sleep(<span class="number">0.0012</span>)</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line"></span><br><span class="line"><span class="meta">@metric</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">slow</span>(<span class="params">x, y, z</span>):</span><br><span class="line">    time.sleep(<span class="number">0.1234</span>)</span><br><span class="line">    <span class="keyword">return</span> x * y * z;</span><br><span class="line"></span><br><span class="line">f = fast(<span class="number">11</span>, <span class="number">22</span>)</span><br><span class="line">s = slow(<span class="number">11</span>, <span class="number">22</span>, <span class="number">33</span>)</span><br><span class="line"><span class="keyword">if</span> f != <span class="number">33</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;测试失败!&#x27;</span>)</span><br><span class="line"><span class="keyword">elif</span> s != <span class="number">7986</span>:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;测试失败!&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行结果</span></span><br><span class="line"><span class="comment"># fast executed in 0.0015223026275634766 ms</span></span><br><span class="line"><span class="comment"># slow executed in 0.1284499168395996 ms</span></span><br></pre></td></tr></table></figure>
+
+
+<p>参考：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5MDEyMDk4Mw==&mid=2650166480&idx=2&sn=be7349921b91730a8c717f6ab28dad97&chksm=be4b59a8893cd0bee407e3d8a1b7bec44d7571623c355a37f352d5cf9e104d986af6f5b5e1fe&scene=21#wechat_redirect">https://mp.weixin.qq.com/s?__biz=MjM5MDEyMDk4Mw==&amp;mid=2650166480&amp;idx=2&amp;sn=be7349921b91730a8c717f6ab28dad97&amp;chksm=be4b59a8893cd0bee407e3d8a1b7bec44d7571623c355a37f352d5cf9e104d986af6f5b5e1fe&amp;scene=21#wechat_redirect</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/" data-id="cllbx2ca00001x7ft38svf50p" data-title="Python装饰器" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-设计模式系列 单例模式" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/08/11/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%20%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time class="dt-published" datetime="2023-08-11T07:12:13.000Z" itemprop="datePublished">2023-08-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/yes_liu.github.io/2023/08/11/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%20%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">设计模式系列 单例模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>顾名思义，单例模式（Singleton Pattern）就是保证一个类有且仅有一个实例，并且提供了一个全局的访问点。这就要求我们绕过常规的构造器，提供一种机制来保证一个类只有一个实例，客户程序在调用某一个类时，它是不会考虑这个类是否只能有一个实例等问题的，所以，这应该是类设计者的责任，而不是类使用者的责任。</p>
+<p>举例：一个应用程序的日志，应用程序的多处都要调用日志进行记录，因此保证类只有一个实例可以将日志内容记录到统一的文件内，防止多个日志实例对象同时写入该文件导致乱序、访问错误等问题。</p>
+<h1 id="实现方法-JAVA"><a href="#实现方法-JAVA" class="headerlink" title="实现方法-JAVA"></a>实现方法-JAVA</h1><h2 id="1-懒汉式（线程不安全）"><a href="#1-懒汉式（线程不安全）" class="headerlink" title="1.懒汉式（线程不安全）"></a>1.懒汉式（线程不安全）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Logger</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Logger uniqueInstance;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Logger</span><span class="params">(String output_file)</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化日志系统，包括日志文件路径、格式设置等</span></span><br><span class="line">        <span class="comment">// ......</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Logger <span class="title function_">getUniqueInstance</span><span class="params">(String output_file)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (uniqueInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">            uniqueInstance = <span class="keyword">new</span> <span class="title class_">Logger</span>(output_file);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明： 先不创建实例，当第一次被调用时，再创建实例，所以被称为懒汉式。<br>优点： 延迟了实例化，如果不需要使用该类，就不会被实例化，节约了系统资源。<br>缺点： 线程不安全，多线程环境下，如果多个线程同时进入了 if (uniqueInstance &#x3D;&#x3D; null) ，若此时还未实例化，也就是uniqueInstance &#x3D;&#x3D; null，那么就会有多个线程执行 uniqueInstance &#x3D; new Singleton(); ，就会实例化多个实例；</p>
+<h2 id="2-饿汉式（线程安全）"><a href="#2-饿汉式（线程安全）" class="headerlink" title="2.饿汉式（线程安全）"></a>2.饿汉式（线程安全）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Logger</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">static</span> <span class="variable">output_file</span> <span class="operator">=</span> <span class="string">&quot;xxx&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">Logger</span> <span class="variable">uniqueInstance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Logger</span>(output_file);</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Logger</span><span class="params">(String output_file)</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化日志系统，包括日志文件路径、格式设置等</span></span><br><span class="line">        <span class="comment">// ......        </span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Logger <span class="title function_">getUniqueInstance</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明： 先不管需不需要使用这个实例，直接先实例化好实例 (饿死鬼一样，所以称为饿汉式)，然后当需要使用的时候，直接调方法就可以使用了。<br>优点： 提前实例化好了一个实例，避免了线程不安全问题的出现。<br>缺点： 直接实例化好了实例，不再延迟实例化；若系统没有使用这个实例，或者系统运行很久之后才需要使用这个实例，都会操作系统的资源浪费。</p>
+<h2 id="3-懒汉式（线程安全）"><a href="#3-懒汉式（线程安全）" class="headerlink" title="3.懒汉式（线程安全）"></a>3.懒汉式（线程安全）</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Logger</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Logger uniqueInstance;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Logger</span><span class="params">(String output_file)</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化日志系统，包括日志文件路径、格式设置等</span></span><br><span class="line">        <span class="comment">// ......</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> Logger <span class="title function_">getUniqueInstance</span><span class="params">(String output_file)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (uniqueInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">            uniqueInstance = <span class="keyword">new</span> <span class="title class_">Logger</span>(output_file);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明： 实现和线程不安全的懒汉式几乎一样，唯一不同的点是，在get方法上加了一把锁。如此一来，多个线程访问，每次只有拿到锁的的线程能够进入该方法，避免了多线程不安全问题的出现。<br>优点： 延迟实例化，节约了资源，并且是线程安全的。<br>缺点： 虽然解决了线程安全问题，但是性能降低了。因为，即使实例已经实例化了，既后续不会再出现线程安全问题了，但是锁还在，每次还是只能拿到锁的线程进入该方法，会使线程阻塞，等待时间过长。</p>
+<h2 id="其余方法"><a href="#其余方法" class="headerlink" title="其余方法"></a>其余方法</h2><p>双重检查锁实现（线程安全）<br>静态内部类实现（线程安全）<br>枚举类实现（线程安全）<br>本人主要语言不是java因此不深入介绍了</p>
+<h1 id="实现方法-Python"><a href="#实现方法-Python" class="headerlink" title="实现方法-Python"></a>实现方法-Python</h1><h2 id="1-函数装饰器"><a href="#1-函数装饰器" class="headerlink" title="1.函数装饰器"></a>1.函数装饰器</h2><p>使用_instance字典，不可变的类地址作为键、其实例作为值，记录已经创建的类实例。如果一个类已经创建了实例，则返回该实例，实现了单例模式。<br>实现代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">singleton</span>(<span class="params">loggger</span>):</span><br><span class="line">    _instance = &#123;&#125;</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">inner</span>():</span><br><span class="line">        <span class="keyword">if</span> cls <span class="keyword">not</span> <span class="keyword">in</span> _instance:</span><br><span class="line">            _instance[cls] = cls()</span><br><span class="line">        <span class="keyword">return</span> _instance[cls]</span><br><span class="line">    <span class="keyword">return</span> inner</span><br><span class="line">    </span><br><span class="line"><span class="meta">@singleton</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Logger</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">log1 = Logger()</span><br><span class="line">log2 = Logger()</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">id</span>(log1) == <span class="built_in">id</span>(log2))</span><br><span class="line"><span class="comment"># 输出结果：</span></span><br><span class="line"><span class="comment"># True</span></span><br></pre></td></tr></table></figure>
+<p>内置函数id，返回对象的“标识值”。该值是一个整数，在此对象的生命周期中保证是唯一且恒定的。输出结果为True表明，log1和log2指向了同一个对象。</p>
+<h2 id="2-类装饰器"><a href="#2-类装饰器" class="headerlink" title="2.类装饰器"></a>2.类装饰器</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Singleton</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, cls</span>):</span><br><span class="line">        self._cls = cls</span><br><span class="line">        self._instance = &#123;&#125;</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">if</span> self._cls <span class="keyword">not</span> <span class="keyword">in</span> self._instance:</span><br><span class="line">            self._instance[self._cls] = self._cls()</span><br><span class="line">        <span class="keyword">return</span> self._instance[self._cls]</span><br><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Logger2</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">log1 = Logger2()</span><br><span class="line">log2 = Logger2()</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">id</span>(log1) == <span class="built_in">id</span>(log2))</span><br></pre></td></tr></table></figure>
+<p>和函数装饰器实现同理</p>
+<h2 id="3-new关键字实现单例模式"><a href="#3-new关键字实现单例模式" class="headerlink" title="3.new关键字实现单例模式"></a>3.new关键字实现单例模式</h2><p>使用 <strong>new</strong> 方法在创造实例时进行干预，达到实现单例模式的目的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Single</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    _instance = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__new__</span>(<span class="params">cls, *args, **kw</span>):</span><br><span class="line">        <span class="keyword">if</span> cls._instance <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            cls._instance = <span class="built_in">object</span>.__new__(cls, *args, **kw)</span><br><span class="line">        <span class="keyword">return</span> cls._instance</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">single1 = Single()</span><br><span class="line">single2 = Single()</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">id</span>(single1) == <span class="built_in">id</span>(single2))</span><br></pre></td></tr></table></figure>
+<p>此处使用_instance来存放一个实例</p>
+<h2 id="4-metaclass元类"><a href="#4-metaclass元类" class="headerlink" title="4.metaclass元类"></a>4.metaclass元类</h2><p>#todo</p>
+<p>参考：<br>java单例模式的六种实现 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904121837830151">https://juejin.cn/post/6844904121837830151</a><br>Python单例模式(Singleton)的N种实现 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/37534850">https://zhuanlan.zhihu.com/p/37534850</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/11/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%20%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" data-id="cllbx2ca00002x7ftgwbd6htx" data-title="设计模式系列 单例模式" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-置身事内" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/08/11/%E7%BD%AE%E8%BA%AB%E4%BA%8B%E5%86%85/" class="article-date">
+  <time class="dt-published" datetime="2023-08-11T06:44:17.000Z" itemprop="datePublished">2023-08-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/yes_liu.github.io/2023/08/11/%E7%BD%AE%E8%BA%AB%E4%BA%8B%E5%86%85/">置身事内</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前言：<br>最近在读兰小欢的《置身事内》，感触很深，随便记录些想法在这</p>
+<h1 id="我们该如何看待政策？"><a href="#我们该如何看待政策？" class="headerlink" title="我们该如何看待政策？"></a>我们该如何看待政策？</h1><p>政策是领导者制定的，影响我们生活中的方方面面，就业、落户、房贷等等。<br>置身事外，是以个人的角度看到的政策的切身影响，带来的影响也可能有好有坏。好了就夸政策制定者天下明主洞穿民生之艰，坏了就骂政策制定者中饱私囊愚笨不堪。<br>置身事内，是把自己带入执政者的角度来思考政策的制定，政策永远是为整体利益而制定的，更何况身处于中国这个14亿人的超大系统，不可能有政策让每个人都受益，因此思考政策制定者的思考逻辑是非常重要的。学会置身事内，才能让自己在政策颁布时，甚至政策颁布前有弹药可打，而不是沦为改革的牺牲品。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/11/%E7%BD%AE%E8%BA%AB%E4%BA%8B%E5%86%85/" data-id="cllbx2c9y0000x7ftf0fw39po" data-title="置身事内" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-bpe" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/yes_liu.github.io/2023/08/08/bpe/" class="article-date">
@@ -452,23 +642,23 @@
       <ul>
         
           <li>
+            <a href="/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">设计模式系列-工厂模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/11/Python%E8%A3%85%E9%A5%B0%E5%99%A8/">Python装饰器</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/11/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%20%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">设计模式系列 单例模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/11/%E7%BD%AE%E8%BA%AB%E4%BA%8B%E5%86%85/">置身事内</a>
+          </li>
+        
+          <li>
             <a href="/yes_liu.github.io/2023/08/08/bpe/">bpe</a>
-          </li>
-        
-          <li>
-            <a href="/yes_liu.github.io/2023/08/05/Python%E5%9F%BA%E6%9C%AC%E5%8A%9F-Iterator-Generator/">Python基本功-Iterator&amp;Generator</a>
-          </li>
-        
-          <li>
-            <a href="/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/">读大语言模型综述-RUC AI Box</a>
-          </li>
-        
-          <li>
-            <a href="/yes_liu.github.io/2023/08/04/%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/">设计原则</a>
-          </li>
-        
-          <li>
-            <a href="/yes_liu.github.io/2023/08/04/hello-world/">Hello World</a>
           </li>
         
       </ul>
