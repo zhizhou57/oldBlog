@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>设计模式系列-原型模式 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="原型模式的类做了这样一个事情：该类可以创建当前对象的一个克隆，从而规避某些情况下直接创建对象代价比较大的问题。（某些情况下，通过new 去创建一个对象，需要非常繁琐的步骤，如：数据准备和检查访问权限等。使用原型模式可以简化这些操作。）例如，一个对象需要在一个高代价的数据库操作之后被创建。我们可以缓存该对象，在下一个请求时返回它的克隆，在需要的时候更新数据库，以此来减少数据库调用。 在java中,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式系列-原型模式">
+<meta property="og:url" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="原型模式的类做了这样一个事情：该类可以创建当前对象的一个克隆，从而规避某些情况下直接创建对象代价比较大的问题。（某些情况下，通过new 去创建一个对象，需要非常繁琐的步骤，如：数据准备和检查访问权限等。使用原型模式可以简化这些操作。）例如，一个对象需要在一个高代价的数据库操作之后被创建。我们可以缓存该对象，在下一个请求时返回它的克隆，在需要的时候更新数据库，以此来减少数据库调用。 在java中,">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-09-13T06:24:52.000Z">
+<meta property="article:modified_time" content="2023-09-13T07:54:12.276Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/yes_liu.github.io/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/yes_liu.github.io/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/yes_liu.github.io/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/yes_liu.github.io/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/yes_liu.github.io/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/">Home</a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/yes_liu.github.io/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhizhou57.github.io/yes_liu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-设计模式系列-原型模式" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time class="dt-published" datetime="2023-09-13T06:24:52.000Z" itemprop="datePublished">2023-09-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      设计模式系列-原型模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>原型模式的类做了这样一个事情：该类可以创建当前对象的一个克隆，从而规避某些情况下直接创建对象代价比较大的问题。（某些情况下，通过new 去创建一个对象，需要非常繁琐的步骤，如：数据准备和检查访问权限等。使用原型模式可以简化这些操作。）<br>例如，一个对象需要在一个高代价的数据库操作之后被创建。我们可以缓存该对象，在下一个请求时返回它的克隆，在需要的时候更新数据库，以此来减少数据库调用。</p>
+<p>在java中, 实现原型模式的步骤:</p>
+<p>第一步: 原型类Prototype实现Cloneable接口,<br>第二步: 重写Object的clone()方法，对于不同属性，选择深拷贝or浅拷贝<br>第三步: 在目标类也就是PrototypeTest类型调用Prototype类的clone方法, 实现对象的复制.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Prototype</span> <span class="keyword">implements</span> <span class="title class_">Cloneable</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> String sex;</span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;String&gt; hobbies;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Prototype</span><span class="params">(String name, <span class="type">int</span> age, String sex, ArrayList&lt;String&gt; hobbies)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.age = age;</span><br><span class="line">        <span class="built_in">this</span>. sex = sex;</span><br><span class="line">        <span class="built_in">this</span>.hobbies = hobbies;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重写object的clone()方法, 并将其作用域设置为public</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> CloneNotSupportedException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Prototype <span class="title function_">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="type">Prototype</span> <span class="variable">clone</span> <span class="operator">=</span> (Prototype)<span class="built_in">super</span>.clone();</span><br><span class="line">        System.out.println(<span class="string">&quot;浅拷贝:&quot;</span> + (clone.hobbies == <span class="built_in">this</span>.hobbies));</span><br><span class="line">        clone.hobbies = (ArrayList&lt;String&gt;) (<span class="built_in">this</span>.hobbies).clone();</span><br><span class="line">        System.out.println(<span class="string">&quot;深拷贝:&quot;</span> + (clone.hobbies == <span class="built_in">this</span>.hobbies));</span><br><span class="line">        <span class="keyword">return</span> clone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Prototype&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;name=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, age=&quot;</span> + age +</span><br><span class="line">                <span class="string">&quot;, sex=&#x27;&quot;</span> + sex + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PrototypeTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="type">ArrayList</span> <span class="variable">hobbies</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>();</span><br><span class="line">        hobbies.add(<span class="string">&quot;篮球&quot;</span>);</span><br><span class="line">        hobbies.add(<span class="string">&quot;排期&quot;</span>);</span><br><span class="line">        <span class="type">Prototype</span> <span class="variable">prototype</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Prototype</span>(<span class="string">&quot;张三&quot;</span>, <span class="number">8</span>, <span class="string">&quot;男&quot;</span>, hobbies);</span><br><span class="line">        <span class="type">Prototype</span> <span class="variable">cloneObject</span> <span class="operator">=</span> (Prototype)prototype.clone();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;比较克隆前后的对象:&quot;</span>+(prototype == cloneObject));</span><br><span class="line">        System.out.println(<span class="string">&quot;比较克隆前后的List&lt;String&gt;属性:&quot;</span> + (prototype.getHobbies() == cloneObject.getHobbies()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/" data-id="clmhg6wmn0000ylft128rcd9b" data-title="设计模式系列-原型模式" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">设计模式系列-建造者模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/08/">August 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/">设计模式系列-原型模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/">设计模式系列-建造者模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/02/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3PositionEmbedding/">bert复现-详解PositionEmbedding</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/31/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3Attention/">bert复现-详解Attention</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">设计模式系列-工厂模式</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/yes_liu.github.io/" class="mobile-nav-link">Home</a>
+  
+    <a href="/yes_liu.github.io/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/yes_liu.github.io/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/yes_liu.github.io/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/yes_liu.github.io/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
