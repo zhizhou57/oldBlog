@@ -73,6 +73,69 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Python基本功-Iterator-Generator" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/08/05/Python%E5%9F%BA%E6%9C%AC%E5%8A%9F-Iterator-Generator/" class="article-date">
+  <time class="dt-published" datetime="2023-08-05T10:43:45.000Z" itemprop="datePublished">2023-08-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/yes_liu.github.io/2023/08/05/Python%E5%9F%BA%E6%9C%AC%E5%8A%9F-Iterator-Generator/">Python基本功-Iterator&amp;Generator</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>Iterator和Generator理解python迭代不可或缺的一环, 就像打球中要掌握正确的挥拍角度和姿势才能建立起正确的肌肉记忆（当然，Iterator并没有那么重要，只是一种夸张的说法）</p>
+<h1 id="Iterable和Iterator"><a href="#Iterable和Iterator" class="headerlink" title="Iterable和Iterator"></a>Iterable和Iterator</h1><p>如果一个对象是Iterable的，那么它是可以被使用者迭代的。如果一个对象是一个Iterator，那么使用者可以用它来迭代另一个对象（一个Iterable的对象）。</p>
+<p>简单来说，Iterable对象是一个容器，里面装满了要遍历的东西；而Iterator是一把勺子，可以从这个容器中盛出所装的item。<br>我们可以测试一下，如下所示，a是一个列表，它是Iterable（可迭代的），但是并不是一个Iterator</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> collections.abc <span class="keyword">import</span> Iterable, Iterator</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">isinstance</span>(a, Iterator)</span><br><span class="line"><span class="literal">False</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">isinstance</span>(a, Iterable)</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>那么我们该如何迭代一个Iterable的对象呢？<br>把一个Iterable对象传递给iter()方法(本质上就是调用可迭代对象的__iter__方法)，可以返回一个对应的Iterator，然后使用next()方法遍历这个对象就可以依次得到所有item。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="built_in">iter</span>(a)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">next</span>(b)</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">next</span>(b)</span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">next</span>(b)</span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">next</span>(b)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">StopIteration</span><br></pre></td></tr></table></figure>
+<p>看到这里你可能会想到，这好像就是for循环所做的事情？<br>是的，for循环本质就是给a创建一个迭代器，然后不断调用next()方法取出元素，复制给变量i，直到没有元素抛出捕获StopIteration的异常，退出循环。</p>
+<h2 id="自己实现一个可迭代对象和迭代器"><a href="#自己实现一个可迭代对象和迭代器" class="headerlink" title="自己实现一个可迭代对象和迭代器"></a>自己实现一个可迭代对象和迭代器</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Iterable, Iterator</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可迭代对象</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyArr</span>():</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.elements = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 返回一个迭代器，并将自己元素的引用传递给迭代器</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__iter__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> MyArrIterator(self.elements)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 迭代器</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyArrIterator</span>():</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, elements</span>):</span><br><span class="line">        self.index = <span class="number">0</span></span><br><span class="line">        self.elements = elements</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 返回self，self就是实例化的对象，也就是调用者自己。</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__iter__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 实现取值</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__next__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 迭代完所有元素抛出异常</span></span><br><span class="line">        <span class="keyword">if</span> self.index &gt;= <span class="built_in">len</span>(self.elements):</span><br><span class="line">            <span class="keyword">raise</span> StopIteration</span><br><span class="line">        value = self.elements[self.index]</span><br><span class="line">        self.index += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">arr = MyArr()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;arr 是可迭代对象：<span class="subst">&#123;<span class="built_in">isinstance</span>(arr, Iterable)&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;arr 是迭代器：<span class="subst">&#123;<span class="built_in">isinstance</span>(arr, Iterator)&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 返回了迭代器</span></span><br><span class="line">arr_iter = arr.__iter__()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;arr_iter 是可迭代对象：<span class="subst">&#123;<span class="built_in">isinstance</span>(arr_iter, Iterable)&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;arr_iter 是迭代器：<span class="subst">&#123;<span class="built_in">isinstance</span>(arr_iter, Iterator)&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(arr_iter))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(arr_iter))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(arr_iter))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">next</span>(arr_iter))</span><br></pre></td></tr></table></figure>
+<p>输出结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;/Users/yes_liu/Study/pythonbase/main.py&quot;, line 47, in &lt;module&gt;</span><br><span class="line">    print(next(arr_iter))</span><br><span class="line">          ^^^^^^^^^^^^^^</span><br><span class="line">  File &quot;/Users/yes_liu/Study/pythonbase/main.py&quot;, line 29, in __next__</span><br><span class="line">    raise StopIteration</span><br><span class="line">StopIteration</span><br><span class="line">arr 是可迭代对象：True</span><br><span class="line">arr 是迭代器：False</span><br><span class="line">arr_iter 是可迭代对象：True</span><br><span class="line">arr_iter 是迭代器：True</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+
+<h1 id="Generator与yield"><a href="#Generator与yield" class="headerlink" title="Generator与yield"></a>Generator与yield</h1><p>Generator对象是Iterator的，也就是说，generator可以用next()方法逐个取出其中的元素。<br>但是Iterator却不一定是Genertor，主要区别在于，Generator返回的值是动态生成的。</p>
+<p>定义迭代器有两种方式，第一个是使用yield关键词，另外一个是生成器表达式”()”，我们用yield关键词定义一个生成器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">gen</span>():</span><br><span class="line">    j = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> j &lt; <span class="number">7</span>:</span><br><span class="line">        j += <span class="number">1</span></span><br><span class="line">        <span class="keyword">yield</span> j</span><br></pre></td></tr></table></figure>
+<p>此时采用的yield的语句的gen函数是一个生成器，此时，每次调用next()的时候执行该函数，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; g = gen()</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">1</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">2</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">3</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">4</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">5</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">6</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">7</span><br><span class="line">&gt;&gt;&gt; next(g)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">StopIteration</span><br></pre></td></tr></table></figure>
+
+<p>其特点是，generator是懒加载的，每次迭代不会像list保存之前的返回值，而是一整个执行流，可以节省内存。</p>
+<p>此外，generator还具有send方法，可以对yield所在的generator传递值，一个经典的应用是生产者和消费者的异步执行，如下所示</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">consumer</span>():</span><br><span class="line">    r = <span class="string">&#x27;here&#x27;</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        n1 = <span class="keyword">yield</span> r   <span class="comment">#这里的等式右边相当于一个整体，接受回传值</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> n1:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;[CONSUMER] Consuming %s...&#x27;</span> % n1)</span><br><span class="line">        r = <span class="string">&#x27;%d00 OK&#x27;</span> % n1</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">produce</span>(<span class="params">c</span>):</span><br><span class="line">    aa = c.send(<span class="literal">None</span>)</span><br><span class="line">    n = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> n &lt; <span class="number">5</span>:</span><br><span class="line">        n = n + <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;[PRODUCER] Producing %s...&#x27;</span> % n)</span><br><span class="line">        r1 = c.send(n)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;[PRODUCER] Consumer return: %s&#x27;</span> % r1)</span><br><span class="line">    c.close()</span><br><span class="line"></span><br><span class="line">c = consumer()</span><br><span class="line">produce(c)</span><br></pre></td></tr></table></figure>
+<p>其运行结果为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[PRODUCER] Producing 1...</span><br><span class="line">[CONSUMER] Consuming 1...</span><br><span class="line">[PRODUCER] Consumer return: 100 OK</span><br><span class="line">[PRODUCER] Producing 2...</span><br><span class="line">[CONSUMER] Consuming 2...</span><br><span class="line">[PRODUCER] Consumer return: 200 OK</span><br><span class="line">[PRODUCER] Producing 3...</span><br><span class="line">[CONSUMER] Consuming 3...</span><br><span class="line">[PRODUCER] Consumer return: 300 OK</span><br><span class="line">[PRODUCER] Producing 4...</span><br><span class="line">[CONSUMER] Consuming 4...</span><br><span class="line">[PRODUCER] Consumer return: 400 OK</span><br><span class="line">[PRODUCER] Producing 5...</span><br><span class="line">[CONSUMER] Consuming 5...</span><br><span class="line">[PRODUCER] Consumer return: 500 OK</span><br></pre></td></tr></table></figure>
+
+<p>参考：<br><a target="_blank" rel="noopener" href="https://www.jb51.net/article/247323.htm">https://www.jb51.net/article/247323.htm</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39521554/article/details/79864889">https://blog.csdn.net/qq_39521554/article/details/79864889</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/08/05/Python%E5%9F%BA%E6%9C%AC%E5%8A%9F-Iterator-Generator/" data-id="clky1fts60000crft0s9xgnyl" data-title="Python基本功-Iterator&amp;Generator" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-读大语言模型综述-RUC-AI-Box" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/yes_liu.github.io/2023/08/05/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC-AI-Box/" class="article-date">
@@ -113,12 +176,12 @@
 <ul>
 <li>KM扩展法则</li>
 </ul>
-<p><img src="/yes_liu.github.io/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC%20AI%20Box/KMFormula.png"></p>
+<p><img src="/yes_liu.github.io/KMFormula.png"></p>
 <p>其中，N:模型规模, D:数据集规模, C:训练计算量, L(·)表示用nats(指使用自然对数的，\sigma -p ln(p))表示的交叉熵损失。在不同数据大小、模型大小和训练计算量之下进行拟合。</p>
 <ul>
 <li>Chinchilla扩展法则</li>
 </ul>
-<p><img src="/yes_liu.github.io/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC%20AI%20Box/Chinchilla.png"><br>其中E&#x3D;1.69,A&#x3D;406.4,B&#x3D;410.7，α&#x3D;0.34和β&#x3D;0.28。</p>
+<p><img src="/yes_liu.github.io/Chinchilla.png"><br>其中E&#x3D;1.69,A&#x3D;406.4,B&#x3D;410.7，α&#x3D;0.34和β&#x3D;0.28。</p>
 <p>KM 扩展法则更偏向于将更大的预算分配给模型大 小，而 Chinchilla 扩展法则则认为模型大小和数据大小应该以相同的比例增加。这些扩展法则提供了对扩展效应的直观理解，使得在训练过程中能够预测LLM的性能。</p>
 <p>然而，一些能力（如ICL）无法根据扩展法则进行预测，只有当模型超过一定规模才能被观察到。</p>
 <h3 id="大模型的涌现能力"><a href="#大模型的涌现能力" class="headerlink" title="大模型的涌现能力"></a>大模型的涌现能力</h3><p>LLM 的涌现能力定义为 “在小型模型中不存在但在大型模型中产生的能力”，与物理学中的相变类似。</p>
@@ -127,7 +190,7 @@
 <li>指令遵循<br>通过使用自然语言描述的混合多任务数据集进行微调(称为指令微调)，LLM 在未见过的以指令形式描述的任务上表现出色。</li>
 <li>逐步推理<br>通过使用思维链(Chain-of-Thought, CoT)提示策略，LLM可以通过利用包含中间推理步骤的提示机制来解决复杂问题。</li>
 </ul>
-<h2 id="2-2-技术演进"><a href="#2-2-技术演进" class="headerlink" title="2.2 技术演进"></a>2.2 技术演进</h2><p>最近几年现有的LLM(大小超过 100 亿)的时间轴如下，因篇幅和精力原因不再赘述<br><img src="/yes_liu.github.io/%E8%AF%BB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BB%BC%E8%BF%B0-RUC%20AI%20Box/timestone.png"></p>
+<h2 id="2-2-技术演进"><a href="#2-2-技术演进" class="headerlink" title="2.2 技术演进"></a>2.2 技术演进</h2><p>最近几年现有的LLM(大小超过 100 亿)的时间轴如下，因篇幅和精力原因不再赘述<br><img src="/yes_liu.github.io/timestone.png"></p>
 <h1 id="3-大预言模型资源"><a href="#3-大预言模型资源" class="headerlink" title="3.大预言模型资源"></a>3.大预言模型资源</h1><p>开发或复现LLM绝非易事，本文整理了公开的checkpoint、语料库和代码库：</p>
 <h2 id="3-1-Checkpoint或API"><a href="#3-1-Checkpoint或API" class="headerlink" title="3.1 Checkpoint或API"></a>3.1 Checkpoint或API</h2><p>详见原文及OpenAI的开放APi: <a target="_blank" rel="noopener" href="https://platform.openai.com/docs/models/overview">https://platform.openai.com/docs/models/overview</a></p>
 <h2 id="3-2-常用语料库"><a href="#3-2-常用语料库" class="headerlink" title="3.2 常用语料库"></a>3.2 常用语料库</h2><p>包括Books、 CommonCrawl、Reddit Links、Wikipedia、Code、Others</p>
@@ -352,6 +415,10 @@
       <ul>
         
           <li>
+            <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">设计模式系列-代理模式</a>
+          </li>
+        
+          <li>
             <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/">设计模式系列-原型模式</a>
           </li>
         
@@ -365,10 +432,6 @@
         
           <li>
             <a href="/yes_liu.github.io/2023/08/31/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3Attention/">bert复现-详解Attention</a>
-          </li>
-        
-          <li>
-            <a href="/yes_liu.github.io/2023/08/15/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">设计模式系列-工厂模式</a>
           </li>
         
       </ul>
