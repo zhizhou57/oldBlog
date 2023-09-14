@@ -6,19 +6,19 @@
   
   <title>bert复现-详解Attention | YesLiu的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="本篇文章介绍使用PyTorch实现BERT中的Self-Attention，本文适用范围：阅读过transformer和bert论文，了解其架构，但是不了解其代码实现的学习者 BERT中的Self-Attention架构BERT中的Self-Attention使用的是与Tranformer中相同的架构，在transformer论文中其示意图如下： 其公式表述为$Attention(Q,K,V)&amp;#">
+  <meta name="description" content="本篇文章介绍使用PyTorch实现BERT中的Self-Attention，本文适用范围：阅读过transformer和bert论文，了解其架构，但是不了解其代码实现的学习者 BERT中的Self-Attention架构BERT中的Self-Attention使用的是与Tranformer中相同的架构，在transformer论文中其示意图如下：  其公式表述为$Attention(Q,K,V)&amp;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="bert复现-详解Attention">
 <meta property="og:url" content="https://zhizhou57.github.io/yes_liu.github.io/2023/08/31/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3Attention/index.html">
 <meta property="og:site_name" content="YesLiu的博客">
-<meta property="og:description" content="本篇文章介绍使用PyTorch实现BERT中的Self-Attention，本文适用范围：阅读过transformer和bert论文，了解其架构，但是不了解其代码实现的学习者 BERT中的Self-Attention架构BERT中的Self-Attention使用的是与Tranformer中相同的架构，在transformer论文中其示意图如下： 其公式表述为$Attention(Q,K,V)&amp;#">
+<meta property="og:description" content="本篇文章介绍使用PyTorch实现BERT中的Self-Attention，本文适用范围：阅读过transformer和bert论文，了解其架构，但是不了解其代码实现的学习者 BERT中的Self-Attention架构BERT中的Self-Attention使用的是与Tranformer中相同的架构，在transformer论文中其示意图如下：  其公式表述为$Attention(Q,K,V)&amp;">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/attention.png">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/08/31/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3Attention/attention.png">
 <meta property="article:published_time" content="2023-08-31T13:46:35.000Z">
-<meta property="article:modified_time" content="2023-09-13T08:08:27.539Z">
+<meta property="article:modified_time" content="2023-09-14T08:18:50.567Z">
 <meta property="article:author" content="yes_liu">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://zhizhou57.github.io/yes_liu.github.io/attention.png">
+<meta name="twitter:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/08/31/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3Attention/attention.png">
   
     <link rel="alternate" href="/yes_liu.github.io/atom.xml" title="YesLiu的博客" type="application/atom+xml">
   
@@ -100,7 +100,8 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <p>本篇文章介绍使用PyTorch实现BERT中的Self-Attention，本文适用范围：阅读过transformer和bert论文，了解其架构，但是不了解其代码实现的学习者</p>
-<h1 id="BERT中的Self-Attention架构"><a href="#BERT中的Self-Attention架构" class="headerlink" title="BERT中的Self-Attention架构"></a>BERT中的Self-Attention架构</h1><p>BERT中的Self-Attention使用的是与Tranformer中相同的架构，在transformer论文中其示意图如下：<br><img src="/yes_liu.github.io/attention.png"></p>
+<h1 id="BERT中的Self-Attention架构"><a href="#BERT中的Self-Attention架构" class="headerlink" title="BERT中的Self-Attention架构"></a>BERT中的Self-Attention架构</h1><p>BERT中的Self-Attention使用的是与Tranformer中相同的架构，在transformer论文中其示意图如下：</p>
+<p><img src="/yes_liu.github.io/2023/08/31/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3Attention/attention.png"></p>
 <p>其公式表述为$Attention(Q,K,V)&#x3D;softmax(\frac{QK^T}{\sqrt{d_k}})V$</p>
 <p>因此其输入为Query、Key、Value三个Tensor, 其大小为[batch_size, head_num, seq_len, d_model&#x2F;head_num], 其中d_model&#x2F;head_num表示多头中拆分到每一个头里的参数大小head_size，seq_len表示文本长度，以及可选的mask，输出为这几个向量经过多次运算后的值。</p>
 <p>整体流程如下：</p>
