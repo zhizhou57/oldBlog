@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>设计模式系列-桥接模式 | YesLiu的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="首先介绍下类的功能层次和类的实现层次：类的功能层次是指，对类进行继承后进行的功能拓展，例如Car(车类)，所有车都有启动和停止方法以及转弯等方法，但是现在我有一个特殊的车需要在Car车类的基础上加一个倒车影像功能，此时只需要继承Car类再自己的类中加一个倒车影像的方法即可。类的实现层次是指，对类只进行继承和方法实现，而不新增方法。比如不同的车都有鸣笛功能，但是鸣笛方式需要不同车来实现。 桥接模式适">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式系列-桥接模式">
+<meta property="og:url" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="YesLiu的博客">
+<meta property="og:description" content="首先介绍下类的功能层次和类的实现层次：类的功能层次是指，对类进行继承后进行的功能拓展，例如Car(车类)，所有车都有启动和停止方法以及转弯等方法，但是现在我有一个特殊的车需要在Car车类的基础上加一个倒车影像功能，此时只需要继承Car类再自己的类中加一个倒车影像的方法即可。类的实现层次是指，对类只进行继承和方法实现，而不新增方法。比如不同的车都有鸣笛功能，但是鸣笛方式需要不同车来实现。 桥接模式适">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/bridge.png">
+<meta property="article:published_time" content="2023-09-14T04:33:39.000Z">
+<meta property="article:modified_time" content="2023-09-14T07:20:19.546Z">
+<meta property="article:author" content="yes_liu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/bridge.png">
+  
+    <link rel="alternate" href="/yes_liu.github.io/atom.xml" title="YesLiu的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/yes_liu.github.io/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/yes_liu.github.io/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/yes_liu.github.io/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/yes_liu.github.io/" id="logo">YesLiu的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/">Home</a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/yes_liu.github.io/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhizhou57.github.io/yes_liu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-设计模式系列-桥接模式" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/" class="article-date">
+  <time class="dt-published" datetime="2023-09-14T04:33:39.000Z" itemprop="datePublished">2023-09-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      设计模式系列-桥接模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>首先介绍下类的功能层次和类的实现层次：<br>类的功能层次是指，对类进行继承后进行的功能拓展，例如Car(车类)，所有车都有启动和停止方法以及转弯等方法，但是现在我有一个特殊的车需要在Car车类的基础上加一个倒车影像功能，此时只需要继承Car类再自己的类中加一个倒车影像的方法即可。<br>类的实现层次是指，对类只进行继承和方法实现，而不新增方法。比如不同的车都有鸣笛功能，但是鸣笛方式需要不同车来实现。</p>
+<p>桥接模式适用于这样一种场景：有一个父类汽车，然后还有多个汽车品牌如宝马、奔驰、奥迪，每个品牌都有品牌信息，这是类的实现层次；同时每个品牌的车都会有有跑车、轿车、SUV三种品类，每种品类的汽车又有不同的功能，比如敞篷、越野等，这又是类的实现层次。这种情况下新增一个汽车品牌要增加该车对应的三个类，非常复杂。<br><img src="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/bridge.png"><br>桥接模式是用于将类的功能层次与类的结构层次分离，其中所涉及的角色为：</p>
+<ul>
+<li>抽象化(Abstraction)角色：抽象化给出的定义，并保存一个对实现化对象的引用。</li>
+<li>修正抽象化(RefinedAbstraction)角色：扩展抽象化角色，改变和修正父类对抽象化的定义。</li>
+<li>实现化(Implementor)角色：这个角色给出实现化角色的接口，但不给出具体的实现。必须指出的是，这个接口不一定和抽象化角色的接口定义相同，实际上，这两个接口可以非常不一样。实现化角色应当只给出底层操作，而抽象化角色应当只给出基于底层操作的更高一层的操作。</li>
+<li>具体实现化(ConcreteImplementor)角色：这个角色给出实现化角色接口的具体实现。</li>
+</ul>
+<p>说人话就是, 让修正抽象化角色在继承中通过增加方法实现功能层次，同时抽象化角色保持一个对实现化对象的引用；而具体实现化对象在继承中通过实现抽象方法完成实现层次的内容。通过这种组合将两种层次进行了桥接，减少了类的数目。</p>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 抽象化角色：品牌</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Brand</span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 品牌信息</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="keyword">void</span> <span class="title function_">info</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BMW</span> <span class="keyword">implements</span> <span class="title class_">Brand</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">info</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.print(<span class="string">&quot;宝马&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Audi</span> <span class="keyword">implements</span> <span class="title class_">Brand</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">info</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.print(<span class="string">&quot;奥迪&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">Car</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> Brand brand;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Car</span><span class="params">(Brand brand)</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.brand = brand;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">info</span><span class="params">()</span>&#123;</span><br><span class="line">        brand.info();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SportsCar</span> <span class="keyword">extends</span> <span class="title class_">Car</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">SportsCar</span><span class="params">(Brand brand)</span>&#123;</span><br><span class="line">        <span class="built_in">super</span>(brand);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">info</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="built_in">super</span>.info();</span><br><span class="line">        System.out.println(<span class="string">&quot;跑车&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">convertile</span><span class="params">()</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;打开敞篷&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">Car</span> <span class="variable">car</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SportsCar</span>(<span class="keyword">new</span> <span class="title class_">BWM</span>());</span><br><span class="line">        car.info();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考：<br><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1895612">https://cloud.tencent.com/developer/article/1895612</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/58903776">https://zhuanlan.zhihu.com/p/58903776</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/" data-id="clmiuz4iq00007aft2hz46sim" data-title="设计模式系列-桥接模式" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">设计模式系列-代理模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/08/">August 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/">设计模式系列-桥接模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">设计模式系列-代理模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/">设计模式系列-原型模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/">设计模式系列-建造者模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/02/bert%E5%A4%8D%E7%8E%B0-%E8%AF%A6%E8%A7%A3PositionEmbedding/">bert复现-详解PositionEmbedding</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 yes_liu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/yes_liu.github.io/" class="mobile-nav-link">Home</a>
+  
+    <a href="/yes_liu.github.io/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/yes_liu.github.io/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/yes_liu.github.io/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/yes_liu.github.io/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
