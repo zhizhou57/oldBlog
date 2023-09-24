@@ -213,7 +213,7 @@ mjx-container[display="true"] + br {
 <p>Specifically, the proposed RoPE encodes the absolute position with a rotation matrix and meanwhile incorporates the explicit relative position dependency in self-attention formulation.</p>
 </blockquote>
 <blockquote>
-<p>特别的，提出的RoPE方法引入了旋转矩阵来编码绝对位置信息，与此同时隐式</p>
+<p>特别的，提出的RoPE方法引入了旋转矩阵来编码绝对位置信息，与此同时隐式的在自注意力机制中引入了相对位置信息</p>
 </blockquote>
 <p>具体是怎么做的呢，首先先看传统的Transformer的做法, 用x表示token embedding，q、k、v分别表示queries, keys, and value representations. f就是一个将token embedding和位置m（n）编码为qkv表示的一个函数<br><img src="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/qkv.png" alt="img.png"></p>
 <p>在传统的Transformer里呢，f做的就是把token embedding加上sinusoidal function形式的绝对位置编码p，然后通过一个线性层（即一个矩阵W）映射到qkv表示的空间<br><img src="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/positionEmb.png" alt="img.png"></p>
