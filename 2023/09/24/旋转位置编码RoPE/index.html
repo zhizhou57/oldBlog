@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>旋转位置编码RoPE | YesLiu的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="旋转位置编码，来源于文章（ROFORMER: ENHANCED TRANSFORMER WITH ROTARY POSITION EMBEDDING），是一种通过构造特定的绝对位置编码使得相对位置信息能够介入到attention中去的一种技术RoPE在LLAMA、PaLM等模型中得到了应用。不过笔者在对比中发现，META Github仓库中的RoPE实现、Huggingface LLAMA中的Ro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="旋转位置编码RoPE">
+<meta property="og:url" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/index.html">
+<meta property="og:site_name" content="YesLiu的博客">
+<meta property="og:description" content="旋转位置编码，来源于文章（ROFORMER: ENHANCED TRANSFORMER WITH ROTARY POSITION EMBEDDING），是一种通过构造特定的绝对位置编码使得相对位置信息能够介入到attention中去的一种技术RoPE在LLAMA、PaLM等模型中得到了应用。不过笔者在对比中发现，META Github仓库中的RoPE实现、Huggingface LLAMA中的Ro">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/qkv.png">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/positionEmb.png">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/zhihu.png">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/f.png">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/f_simple.png">
+<meta property="article:published_time" content="2023-09-24T08:10:10.000Z">
+<meta property="article:modified_time" content="2023-09-24T16:58:58.468Z">
+<meta property="article:author" content="yes_liu">
+<meta property="article:tag" content="LLAMA">
+<meta property="article:tag" content="RoPE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/qkv.png">
+  
+    <link rel="alternate" href="/yes_liu.github.io/atom.xml" title="YesLiu的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/yes_liu.github.io/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/yes_liu.github.io/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/yes_liu.github.io/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/yes_liu.github.io/" id="logo">YesLiu的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/">Home</a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/yes_liu.github.io/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhizhou57.github.io/yes_liu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-旋转位置编码RoPE" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/" class="article-date">
+  <time class="dt-published" datetime="2023-09-24T08:10:10.000Z" itemprop="datePublished">2023-09-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      旋转位置编码RoPE
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>旋转位置编码，来源于文章（ROFORMER: ENHANCED TRANSFORMER WITH ROTARY POSITION EMBEDDING），是一种通过构造特定的绝对位置编码使得相对位置信息能够介入到attention中去的一种技术<br>RoPE在LLAMA、PaLM等模型中得到了应用。<br>不过笔者在对比中发现，META Github仓库中的RoPE实现、Huggingface LLAMA中的RoPE实现、Huggingface Roformer中的RoPE实现竟然均不相同，代码上其实是有所不同的（不知道是有意修改还是无意写错），下面将详细介绍</p>
+<h1 id="RoPE原理"><a href="#RoPE原理" class="headerlink" title="RoPE原理"></a>RoPE原理</h1><p>引用Roformer中比较精髓的一句话：</p>
+<blockquote>
+<p>Specifically, the proposed RoPE encodes the absolute position with a rotation matrix and meanwhile incorporates the explicit relative position dependency in self-attention formulation.</p>
+</blockquote>
+<blockquote>
+<p>特别的，提出的RoPE方法引入了旋转矩阵来编码绝对位置信息，与此同时隐式</p>
+</blockquote>
+<p>具体是怎么做的呢，首先先看传统的Transformer的做法, 用x表示token embedding，q、k、v分别表示queries, keys, and value representations. f就是一个将token embedding和位置m（n）编码为qkv表示的一个函数<br><img src="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/qkv.png" alt="img.png"></p>
+<p>在传统的Transformer里呢，f做的就是把token embedding加上sinusoidal function形式的绝对位置编码p，然后通过一个线性层（即一个矩阵W）映射到qkv表示的空间<br><img src="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/positionEmb.png" alt="img.png"></p>
+<p>这篇论文的动机其实很难评价，作者在论文的Conclusion部分也说了，相对位置编码可以work这件事很难解释，而且作者苏神在知乎上写了这么一段话：<br><img src="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/zhihu.png" alt="img.png"><br>然后这篇论文其实也未真正发表，甚至作者自己都不知道motivation该怎么写，但这个方法可能确实work吧，所以大家都用了<br>（其实写到这里我都快不想写这篇博客了，未发表的论文感觉还是有点难评价，不够成熟）<br>参见：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/450936573/answer/1797187035">https://www.zhihu.com/question/450936573/answer/1797187035</a></p>
+<p>作者的想法就是，改一下这个f的形式（其实就相当于，每对x_i, x_i+1都进行一次在复数极坐标系中的旋转）：<br><img src="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/f.png" alt="img.png"><br>具体细节后续补充，挖个坑先。<br>然后这个f就可以等价于这个形式，这就是RoPE<br><img src="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/f_simple.png" alt="img.png"></p>
+<h1 id="RoPE实现"><a href="#RoPE实现" class="headerlink" title="RoPE实现"></a>RoPE实现</h1><p>我发现RoPE有三种不同的代码实现，很奇怪，下面一一介绍</p>
+<p>第一种是META的LLAMA（ <a target="_blank" rel="noopener" href="https://github.com/facebookresearch/llama">https://github.com/facebookresearch/llama</a> ）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Tuple</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">precompute_freqs_cis</span>(<span class="params">dim: <span class="built_in">int</span>, end: <span class="built_in">int</span>, theta: <span class="built_in">float</span> = <span class="number">10000.0</span></span>):</span><br><span class="line">    freqs = <span class="number">1.0</span> / (theta ** (torch.arange(<span class="number">0</span>, dim, <span class="number">2</span>)[: (dim // <span class="number">2</span>)].<span class="built_in">float</span>() / dim))</span><br><span class="line">    t = torch.arange(end, device=freqs.device)  <span class="comment"># type: ignore</span></span><br><span class="line">    freqs = torch.outer(t, freqs).<span class="built_in">float</span>()  <span class="comment"># type: ignore</span></span><br><span class="line">    freqs_cis = torch.polar(torch.ones_like(freqs), freqs)  <span class="comment"># complex64</span></span><br><span class="line">    <span class="keyword">return</span> freqs_cis</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">reshape_for_broadcast</span>(<span class="params">freqs_cis: torch.Tensor, x: torch.Tensor</span>):</span><br><span class="line">    ndim = x.ndim</span><br><span class="line">    <span class="keyword">assert</span> <span class="number">0</span> &lt;= <span class="number">1</span> &lt; ndim</span><br><span class="line">    <span class="keyword">assert</span> freqs_cis.shape == (x.shape[<span class="number">1</span>], x.shape[-<span class="number">1</span>])</span><br><span class="line">    shape = [d <span class="keyword">if</span> i == <span class="number">1</span> <span class="keyword">or</span> i == ndim - <span class="number">1</span> <span class="keyword">else</span> <span class="number">1</span> <span class="keyword">for</span> i, d <span class="keyword">in</span> <span class="built_in">enumerate</span>(x.shape)]</span><br><span class="line">    <span class="keyword">return</span> freqs_cis.view(*shape)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">apply_rotary_emb</span>(<span class="params"></span></span><br><span class="line"><span class="params">    xq: torch.Tensor,</span></span><br><span class="line"><span class="params">    xk: torch.Tensor,</span></span><br><span class="line"><span class="params">    freqs_cis: torch.Tensor,</span></span><br><span class="line"><span class="params"></span>) -&gt; <span class="type">Tuple</span>[torch.Tensor, torch.Tensor]:</span><br><span class="line">    xq_ = torch.view_as_complex(xq.<span class="built_in">float</span>().reshape(*xq.shape[:-<span class="number">1</span>], -<span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">    xk_ = torch.view_as_complex(xk.<span class="built_in">float</span>().reshape(*xk.shape[:-<span class="number">1</span>], -<span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">    freqs_cis = reshape_for_broadcast(freqs_cis, xq_)</span><br><span class="line">    xq_out = torch.view_as_real(xq_ * freqs_cis).flatten(<span class="number">3</span>)</span><br><span class="line">    xk_out = torch.view_as_real(xk_ * freqs_cis).flatten(<span class="number">3</span>)</span><br><span class="line">    <span class="keyword">return</span> xq_out.type_as(xq), xk_out.type_as(xk)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取修改后的query、key</span></span><br><span class="line">freqs = precompute_freqs_cis(head_dim, seq_len)</span><br><span class="line">xq_meta_llama, xk_meta_pyllama = apply_rotary_emb(xq, xk, freqs_cis=freqs)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>相当于只要了原文中的第一项，即（x_1, …, x_d） * (cos(m<em>theta1), …, cos(m</em>thetad&#x2F;2))</p>
+<p>第二种是huggingface里的LLAMA实现</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RotaryEmbedding</span>(torch.nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, dim, max_position_embeddings=<span class="number">2048</span>, base=<span class="number">10000</span>, device=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        inv_freq = <span class="number">1.0</span> / (base ** (torch.arange(<span class="number">0</span>, dim, <span class="number">2</span>).<span class="built_in">float</span>().to(device) / dim))</span><br><span class="line">        self.register_buffer(<span class="string">&quot;inv_freq&quot;</span>, inv_freq)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Build here to make `torch.jit.trace` work.</span></span><br><span class="line">        self.max_seq_len_cached = max_position_embeddings</span><br><span class="line">        t = torch.arange(</span><br><span class="line">            self.max_seq_len_cached,</span><br><span class="line">            device=self.inv_freq.device,</span><br><span class="line">            dtype=self.inv_freq.dtype,</span><br><span class="line">        )</span><br><span class="line">        freqs = torch.einsum(<span class="string">&quot;i,j-&gt;ij&quot;</span>, t, self.inv_freq)</span><br><span class="line">        <span class="comment"># Different from paper, but it uses a different permutation in order to obtain the same calculation</span></span><br><span class="line">        emb = torch.cat((freqs, freqs), dim=-<span class="number">1</span>)</span><br><span class="line">        self.cos_cached = emb.cos()[<span class="literal">None</span>, <span class="literal">None</span>, :, :]</span><br><span class="line">        self.sin_cached = emb.sin()[<span class="literal">None</span>, <span class="literal">None</span>, :, :]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x, seq_len=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="comment"># x: [bs, num_attention_heads, seq_len, head_size]</span></span><br><span class="line">        <span class="comment"># This `if` block is unlikely to be run after we build sin/cos in `__init__`. Keep the logic here just in case.</span></span><br><span class="line">        <span class="keyword">if</span> seq_len &gt; self.max_seq_len_cached:</span><br><span class="line">            self.max_seq_len_cached = seq_len</span><br><span class="line">            t = torch.arange(</span><br><span class="line">                self.max_seq_len_cached, device=x.device, dtype=self.inv_freq.dtype</span><br><span class="line">            )</span><br><span class="line">            freqs = torch.einsum(<span class="string">&quot;i,j-&gt;ij&quot;</span>, t, self.inv_freq)</span><br><span class="line">            <span class="comment"># Different from paper, but it uses a different permutation in order to obtain the same calculation</span></span><br><span class="line">            emb = torch.cat((freqs, freqs), dim=-<span class="number">1</span>).to(x.device)</span><br><span class="line">            self.cos_cached = emb.cos()[<span class="literal">None</span>, <span class="literal">None</span>, :, :].to(dtype=x.dtype)</span><br><span class="line">            self.sin_cached = emb.sin()[<span class="literal">None</span>, <span class="literal">None</span>, :, :].to(dtype=x.dtype)</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            self.cos_cached[:, :, :seq_len, ...].to(dtype=x.dtype, device=x.device),</span><br><span class="line">            self.sin_cached[:, :, :seq_len, ...].to(dtype=x.dtype, device=x.device),</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rotate_half</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Rotates half the hidden dims of the input.&quot;&quot;&quot;</span></span><br><span class="line">    x1 = x[..., : x.shape[-<span class="number">1</span>] // <span class="number">2</span>]</span><br><span class="line">    x2 = x[..., x.shape[-<span class="number">1</span>] // <span class="number">2</span> :]</span><br><span class="line">    <span class="built_in">print</span>(x1)</span><br><span class="line">    <span class="built_in">print</span>(x2)</span><br><span class="line">    <span class="built_in">print</span>(torch.cat((-x2, x1), dim=-<span class="number">1</span>))</span><br><span class="line">    <span class="keyword">return</span> torch.cat((-x2, x1), dim=-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">apply_rotary_pos_emb</span>(<span class="params">q, k, cos, sin, offset: <span class="built_in">int</span> = <span class="number">0</span></span>):</span><br><span class="line">    cos = cos[..., offset : q.shape[-<span class="number">2</span>] + offset, :]</span><br><span class="line">    sin = sin[..., offset : q.shape[-<span class="number">2</span>] + offset, :]</span><br><span class="line">    q_embed = (q * cos) + (rotate_half(q) * sin)</span><br><span class="line">    k_embed = (k * cos) + (rotate_half(k) * sin)</span><br><span class="line">    <span class="keyword">return</span> q_embed, k_embed</span><br></pre></td></tr></table></figure>
+
+<p>相当于第二项变成了（x_1, …x_d&#x2F;2, -x_d&#x2F;2, …, -x_d） * (cos(m<em>theta1), …, cos(m</em>thetad&#x2F;2))</p>
+<p>最后一种就是 huggingface中的Roformer了, 与原文公式一致</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">apply_rotary_position_embeddings</span>(<span class="params">sinusoidal_pos, query_layer, key_layer, value_layer=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="comment"># https://kexue.fm/archives/8265</span></span><br><span class="line">    <span class="comment"># sin [batch_size, num_heads, sequence_length, embed_size_per_head//2]</span></span><br><span class="line">    <span class="comment"># cos [batch_size, num_heads, sequence_length, embed_size_per_head//2]</span></span><br><span class="line">    sin, cos = sinusoidal_pos.chunk(<span class="number">2</span>, dim=-<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># sin [θ0,θ1,θ2......θd/2-1] -&gt; sin_pos [θ0,θ0,θ1,θ1,θ2,θ2......θd/2-1,θd/2-1]</span></span><br><span class="line">    sin_pos = torch.stack([sin, sin], dim=-<span class="number">1</span>).reshape_as(sinusoidal_pos)</span><br><span class="line">    <span class="comment"># cos [θ0,θ1,θ2......θd/2-1] -&gt; cos_pos [θ0,θ0,θ1,θ1,θ2,θ2......θd/2-1,θd/2-1]</span></span><br><span class="line">    cos_pos = torch.stack([cos, cos], dim=-<span class="number">1</span>).reshape_as(sinusoidal_pos)</span><br><span class="line">    <span class="comment"># rotate_half_query_layer [-q1,q0,-q3,q2......,-qd-1,qd-2]</span></span><br><span class="line">    rotate_half_query_layer = torch.stack([-query_layer[..., <span class="number">1</span>::<span class="number">2</span>], query_layer[..., ::<span class="number">2</span>]], dim=-<span class="number">1</span>).reshape_as(</span><br><span class="line">        query_layer</span><br><span class="line">    )</span><br><span class="line">    query_layer = query_layer * cos_pos + rotate_half_query_layer * sin_pos</span><br><span class="line">    <span class="comment"># rotate_half_key_layer [-k1,k0,-k3,k2......,-kd-1,kd-2]</span></span><br><span class="line">    rotate_half_key_layer = torch.stack([-key_layer[..., <span class="number">1</span>::<span class="number">2</span>], key_layer[..., ::<span class="number">2</span>]], dim=-<span class="number">1</span>).reshape_as(key_layer)</span><br><span class="line">    key_layer = key_layer * cos_pos + rotate_half_key_layer * sin_pos</span><br><span class="line">    <span class="keyword">if</span> value_layer <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># rotate_half_value_layer [-v1,v0,-v3,v2......,-vd-1,vd-2]</span></span><br><span class="line">        rotate_half_value_layer = torch.stack([-value_layer[..., <span class="number">1</span>::<span class="number">2</span>], value_layer[..., ::<span class="number">2</span>]], dim=-<span class="number">1</span>).reshape_as(</span><br><span class="line">            value_layer</span><br><span class="line">        )</span><br><span class="line">        value_layer = value_layer * cos_pos + rotate_half_value_layer * sin_pos</span><br><span class="line">        <span class="keyword">return</span> query_layer, key_layer, value_layer</span><br><span class="line">    <span class="keyword">return</span> query_layer, key_layer</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RoFormerSinusoidalPositionalEmbedding</span>(nn.Embedding):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;This module produces sinusoidal positional embeddings of any length.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num_positions: <span class="built_in">int</span>, embedding_dim: <span class="built_in">int</span>, padding_idx: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">        <span class="built_in">super</span>().__init__(num_positions, embedding_dim)</span><br><span class="line">        self.weight = self._init_weight(self.weight)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_init_weight</span>(<span class="params">out: nn.Parameter</span>) -&gt; nn.Parameter:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        Identical to the XLM create_sinusoidal_embeddings except features are not interleaved. The cos features are in</span></span><br><span class="line"><span class="string">        the 2nd half of the vector. [dim // 2:]</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        n_pos, dim = out.shape</span><br><span class="line">        position_enc = np.array(</span><br><span class="line">            [[pos / np.power(<span class="number">10000</span>, <span class="number">2</span> * (j // <span class="number">2</span>) / dim) <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(dim)] <span class="keyword">for</span> pos <span class="keyword">in</span> <span class="built_in">range</span>(n_pos)]</span><br><span class="line">        )</span><br><span class="line">        out.requires_grad = <span class="literal">False</span>  <span class="comment"># set early to avoid an error in pytorch-1.8+</span></span><br><span class="line">        sentinel = dim // <span class="number">2</span> <span class="keyword">if</span> dim % <span class="number">2</span> == <span class="number">0</span> <span class="keyword">else</span> (dim // <span class="number">2</span>) + <span class="number">1</span></span><br><span class="line">        out[:, <span class="number">0</span>:sentinel] = torch.FloatTensor(np.sin(position_enc[:, <span class="number">0</span>::<span class="number">2</span>]))</span><br><span class="line">        out[:, sentinel:] = torch.FloatTensor(np.cos(position_enc[:, <span class="number">1</span>::<span class="number">2</span>]))</span><br><span class="line">        out.detach_()</span><br><span class="line">        <span class="keyword">return</span> out</span><br><span class="line"></span><br><span class="line"><span class="meta">    @torch.no_grad()</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, input_ids_shape: torch.Size, past_key_values_length: <span class="built_in">int</span> = <span class="number">0</span></span>) -&gt; torch.Tensor:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;`input_ids_shape` is expected to be [bsz x seqlen].&quot;&quot;&quot;</span></span><br><span class="line">        bsz, seq_len = input_ids_shape[:<span class="number">2</span>]</span><br><span class="line">        positions = torch.arange(</span><br><span class="line">            past_key_values_length, past_key_values_length + seq_len, dtype=torch.long, device=self.weight.device</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>().forward(positions)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/" data-id="clmxpf9s9000080raekrj6d0k" data-title="旋转位置编码RoPE" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/yes_liu.github.io/tags/LLAMA/" rel="tag">LLAMA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/yes_liu.github.io/tags/RoPE/" rel="tag">RoPE</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">设计模式系列-桥接模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/yes_liu.github.io/tags/LLAMA/" rel="tag">LLAMA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/yes_liu.github.io/tags/RoPE/" rel="tag">RoPE</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/yes_liu.github.io/tags/LLAMA/" style="font-size: 10px;">LLAMA</a> <a href="/yes_liu.github.io/tags/RoPE/" style="font-size: 10px;">RoPE</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/08/">August 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/">旋转位置编码RoPE</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F/">设计模式系列-桥接模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">设计模式系列-代理模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/">设计模式系列-原型模式</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/">设计模式系列-建造者模式</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 yes_liu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/yes_liu.github.io/" class="mobile-nav-link">Home</a>
+  
+    <a href="/yes_liu.github.io/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/yes_liu.github.io/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/yes_liu.github.io/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/yes_liu.github.io/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
