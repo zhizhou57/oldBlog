@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>可解释性-积分梯度算法 | YesLiu的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="最近阅读文章看到一篇可解释性的相关的，往上追溯到了积分梯度算法（Integrated Gradients），蛮有意思，写篇博客整理一下思路参考论文：Axiomatic Attribution for Deep Networks https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;1703.01365 motivation这篇文章研究的是如何将模型的预测归因到模型的输入上，以对模型进行debug、提取规则以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可解释性-积分梯度算法">
+<meta property="og:url" content="https://zhizhou57.github.io/yes_liu.github.io/2023/11/02/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="YesLiu的博客">
+<meta property="og:description" content="最近阅读文章看到一篇可解释性的相关的，往上追溯到了积分梯度算法（Integrated Gradients），蛮有意思，写篇博客整理一下思路参考论文：Axiomatic Attribution for Deep Networks https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;1703.01365 motivation这篇文章研究的是如何将模型的预测归因到模型的输入上，以对模型进行debug、提取规则以">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/ig1.png">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/ig2.png">
+<meta property="og:image" content="https://zhizhou57.github.io/yes_liu.github.io/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/img.png">
+<meta property="article:published_time" content="2023-11-02T07:21:25.000Z">
+<meta property="article:modified_time" content="2023-11-02T16:02:35.918Z">
+<meta property="article:author" content="yes_liu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhizhou57.github.io/yes_liu.github.io/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/ig1.png">
+  
+    <link rel="alternate" href="/yes_liu.github.io/atom.xml" title="YesLiu的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/yes_liu.github.io/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/yes_liu.github.io/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/yes_liu.github.io/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/yes_liu.github.io/" id="logo">YesLiu的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/">Home</a>
+        
+          <a class="main-nav-link" href="/yes_liu.github.io/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/yes_liu.github.io/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://zhizhou57.github.io/yes_liu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-可解释性-积分梯度算法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/yes_liu.github.io/2023/11/02/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/" class="article-date">
+  <time class="dt-published" datetime="2023-11-02T07:21:25.000Z" itemprop="datePublished">2023-11-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      可解释性-积分梯度算法
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>最近阅读文章看到一篇可解释性的相关的，往上追溯到了积分梯度算法（Integrated Gradients），蛮有意思，写篇博客整理一下思路<br>参考论文：Axiomatic Attribution for Deep Networks <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1703.01365">https://arxiv.org/abs/1703.01365</a></p>
+<h1 id="motivation"><a href="#motivation" class="headerlink" title="motivation"></a>motivation</h1><p>这篇文章研究的是如何将模型的预测归因到模型的输入上，以对模型进行debug、提取规则以更好的使用模型。<br>先前的基于经验的归因评估方法，例如通过归因挑选Top k个像素，随机变化其值然后衡量得分下降的幅度。但是这种方法不够自然，因为模型可能没见过变化后的图像因此给出一个较低的得分。其他的经验评估技术都无法区分源于扰动数据的伪影、行为不当的模型和行为不当的归因方法。<br>因此本篇文章基于两个基本公理：Sensitivity和Implementation Invariance来设计自己的归因方法。</p>
+<h1 id="两个基本公理"><a href="#两个基本公理" class="headerlink" title="两个基本公理"></a>两个基本公理</h1><h2 id="Sensitivity"><a href="#Sensitivity" class="headerlink" title="Sensitivity"></a>Sensitivity</h2><p>对于每个输入而言，如果baseline和与其在一个特征和预测值上不相同，那么这个特征应该被给予一个非零的归因。<br>用梯度作为归因，和Sensitivity是相违背的，例如函数$$ f(x) &#x3D; 1 - ReLU(1-x) &#x3D; [ f(x) &#x3D; \begin{cases} x &amp; \text{if } x &lt; 1 \ 0 &amp; \text{otherwise} \end{cases} ] $$ 当x大于等于1时，尽管此时的x与baseline不同，但是其梯度（即归因）为零。因此以梯度作为归因会导致focus到一些不相关的特征</p>
+<h2 id="Implementation-Invariance"><a href="#Implementation-Invariance" class="headerlink" title="Implementation Invariance"></a>Implementation Invariance</h2><p>对于两个在功能上等价的神经网络（输入相同时网络输出相同，但实现方法可能不同），他们对于同一输入的归因也必须是相同的。<br>而基于梯度的归因是依赖于网络具体实现的，不满足该性质。</p>
+<h1 id="Our-Method：Integrated-Gradients"><a href="#Our-Method：Integrated-Gradients" class="headerlink" title="Our Method：Integrated Gradients"></a>Our Method：Integrated Gradients</h1><p>该方法不直接使用梯度，而是对梯度进行积分。对于输入x和baseline x’，沿着第i维的积分梯度定义如下：<br><img src="/yes_liu.github.io/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/ig1.png" alt="img.png"><br>实际计算时选择一个路径进行积分，该论文选择直线，即<br><img src="/yes_liu.github.io/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/ig2.png" alt="img.png"><br>比较容易证明，这个方法是满足上面两个公理的<br>实验也发现，效果挺不错的，不愧是被引4000+的文章<br><img src="/yes_liu.github.io/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/img.png" alt="img.png"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://zhizhou57.github.io/yes_liu.github.io/2023/11/02/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/" data-id="clohdkyvz0002curad41aakk2" data-title="可解释性-积分梯度算法" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/yes_liu.github.io/2023/10/23/NLP-Metric/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">NLP-Metric</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/yes_liu.github.io/tags/LLAMA/" rel="tag">LLAMA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/yes_liu.github.io/tags/RoPE/" rel="tag">RoPE</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/yes_liu.github.io/tags/LLAMA/" style="font-size: 10px;">LLAMA</a> <a href="/yes_liu.github.io/tags/RoPE/" style="font-size: 10px;">RoPE</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/yes_liu.github.io/archives/2023/08/">August 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/11/02/%E5%8F%AF%E8%A7%A3%E9%87%8A%E6%80%A7-%E7%A7%AF%E5%88%86%E6%A2%AF%E5%BA%A6%E7%AE%97%E6%B3%95/">可解释性-积分梯度算法</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/10/23/NLP-Metric/">NLP-Metric</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/10/23/GPT%E7%B3%BB%E5%88%97%E6%A8%A1%E5%9E%8B%E7%89%88%E6%9C%AC%E6%BC%94%E8%BF%9B/">GPT系列模型版本演进</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/10/20/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AF%84%E6%B5%8B%E7%BB%BC%E8%BF%B0/">大模型评测综述</a>
+          </li>
+        
+          <li>
+            <a href="/yes_liu.github.io/2023/09/24/%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81RoPE/">旋转位置编码RoPE</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 yes_liu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/yes_liu.github.io/" class="mobile-nav-link">Home</a>
+  
+    <a href="/yes_liu.github.io/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/yes_liu.github.io/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/yes_liu.github.io/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/yes_liu.github.io/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
